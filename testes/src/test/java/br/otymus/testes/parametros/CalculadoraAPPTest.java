@@ -13,8 +13,6 @@ class CalculadoraAPPTest {
 
     CalculadoraAPP calc;
 
-
-
     @BeforeEach
     void BeforeEach() {
         calc = new CalculadoraAPP();
