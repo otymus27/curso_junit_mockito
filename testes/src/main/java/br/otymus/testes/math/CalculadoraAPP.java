@@ -15,8 +15,8 @@ public class CalculadoraAPP {
     }
 
     public Double dividir(Double a, Double b) {
-        if (b == 0) {
-            throw  new ArithmeticException("Divisão por zero não permitida");
+        if (b.equals(0D)) {
+            throw new ArithmeticException("Divisão por zero não é permitida");
         }
         return a / b;
     }
