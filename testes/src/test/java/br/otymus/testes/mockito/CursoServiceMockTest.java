@@ -3,11 +3,15 @@ package br.otymus.testes.mockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 public class CursoServiceMockTest {
@@ -171,6 +175,51 @@ public class CursoServiceMockTest {
         cursoServico.excluirCursosQueNaoContemSpring("Leandro");
 
         // Then - Assertion : Verificação se o retorno foi de acordo com o esperado
-        verify(mockService).excluirCurso("Agile Desmistificado com Scrum, XP, Kanban e Trello");
+        verify(mockService,times(1)).excluirCurso("Agile Desmistificado com Scrum, XP, Kanban e Trello");
+        verify(mockService).excluirCurso("REST API's RESTFul do 0 à Azure com ASP.NET Core 5 e Docker");
+        verify(mockService,never()).excluirCurso("Microsserviços do 0 com Spring Cloud, Spring Boot e Docker");
+    }
+
+    @Test
+    @DisplayName("Deve simular (mockar) a exclusão de um curso capturando argumentos.")
+    void testExcluirCursoQueCapturandoArgumentos() {
+        // Given - Arrange : Seção onde preparamos ou definimos as variaveis que serao usadas no teste
+        cursos = Arrays.asList(
+                "Agile Desmistificado com Scrum, XP, Kanban e Trello",
+                "REST API's RESTFul do 0 à AWS com Spring Boot 3 Java e Docker"
+
+        );
+
+
+        when(mockService.recuperarCursos("Leandro")).thenReturn(cursos);
+
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        String agileCurso = "Agile Desmistificado com Scrum, XP, Kanban e Trello";
+
+        // When - Act : O que será feito ou o metodo que sera testado
+        cursoServico.excluirCursosQueNaoContemSpring("Leandro");
+
+        // Then - Assertion : Verificação se o retorno foi de acordo com o esperado
+        then(mockService).should().excluirCurso(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue(), is(agileCurso));
+    }
+
+    @Test
+    @DisplayName("Deve simular (mockar) a exclusão de um curso capturando varios argumentos.")
+    void testExcluirCursoQueCapturandoVariosArgumentos() {
+        // Given - Arrange : Seção onde preparamos ou definimos as variaveis que serao usadas no teste
+        when(mockService.recuperarCursos("Leandro")).thenReturn(cursos);
+
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        //String agileCurso = "Agile Desmistificado com Scrum, XP, Kanban e Trello";
+
+        // When - Act : O que será feito ou o metodo que sera testado
+        cursoServico.excluirCursosQueNaoContemSpring("Leandro");
+
+        // Then - Assertion : Verificação se o retorno foi de acordo com o esperado
+        then(mockService).should(times(7)).excluirCurso(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues().size(), is(7));
     }
 }
